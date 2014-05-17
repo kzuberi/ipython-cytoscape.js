@@ -1,7 +1,7 @@
 
 require.config({
     paths: {
-        cytoscape: "http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js",
+        cytoscape: "http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min",
     }
 });
 
