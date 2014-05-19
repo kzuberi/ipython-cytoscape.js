@@ -5,6 +5,7 @@ from IPython.utils.traitlets import Unicode, List
 import json
 from pkg_resources import resource_stream
 from contextlib import closing
+import copy
 
 
 def init():
@@ -53,6 +54,17 @@ default_style = {'node': {
 }
 
 
+def style_factory():
+    '''
+    would be great to come up with a collection
+    of attractive built-in styles to use and customize
+
+    for now, just a default
+    '''
+
+    return copy.deepcopy(default_style)
+
+
 def to_cystyle(style):
     '''
     cytoscape likes a list of objects with a pair of keys,
@@ -67,13 +79,10 @@ def to_cystyle(style):
     return json.dumps(stylish_list)
 
 
-default_style_json = to_cystyle(default_style)
-
-
 class CytoWidget(widgets.DOMWidget):
     _view_name = Unicode('CytoWidgetView', sync=True)
     elements = List(Unicode, sync=True)
-    style = Unicode(default_style_json, sync=True)
+    style = Unicode('', sync=True)
 
     def __init__(self):
         '''
@@ -82,12 +91,14 @@ class CytoWidget(widgets.DOMWidget):
         '''
         super(CytoWidget, self).__init__()
 
+
 class Graph(object):
-    def __init__(self, nodes_df, edges_df):
+    def __init__(self, nodes_df, edges_df, style=default_style):
         self._nodes_df = nodes_df
         self._edges_df = edges_df
         self._widget = CytoWidget()
         self._widget.on_displayed(self._on_displayed)
+        self._widget.style = to_cystyle(style)
 
     def _on_displayed(self, e):
         elements = self._get_elements()
