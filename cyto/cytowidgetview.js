@@ -22,9 +22,6 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
 
             var that = this;
 
-            var style = this.model.get('default_style_json');
-
-
             this.$el.cytoscape({
 
                 layout: {
