@@ -78,6 +78,18 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
             return CytoWidgetView.__super__.update.apply(this);
         },
 
+        on_msg: function(msg) {
+            if (msg.msg_type == 'get_snapshot') {
+                var cy = this.$el.cytoscape('get');
+                var image = cy.png()
+                this.send({'image': image});
+            }
+            else {
+                // TODO: have to fallback to superclass on_msg for add_class etc?
+                console.log("unexpected msg_type", msg.msg_type);
+            }
+        }
+
     });
 
     // register widget

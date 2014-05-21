@@ -2,10 +2,12 @@
 from IPython.html import widgets, nbextensions
 from IPython.display import display, Javascript
 from IPython.utils.traitlets import Unicode, List
+from IPython.core.display import Image
 import json
 from pkg_resources import resource_stream
 from contextlib import closing
 import copy
+import base64
 
 
 def init():
@@ -98,11 +100,18 @@ class Graph(object):
         self._edges_df = edges_df
         self._widget = CytoWidget()
         self._widget.on_displayed(self._on_displayed)
+        self._widget.on_msg(self._handle_message)
         self._widget.style = to_cystyle(style)
+        self.png = None
 
     def _on_displayed(self, e):
         elements = self._get_elements()
         self._widget.elements = elements
+
+    def _handle_message(self, widget, content):
+        image = content['image']
+        # should look like "data:image/<image type>;base64,<base64 encoded image>"
+        self.png = base64.decodestring(image.split(',')[1])
 
     def show(self):
         display(self._widget)
@@ -112,6 +121,18 @@ class Graph(object):
         edge_data = self._edges_df.to_json(orient='records')
         elements = [node_data, edge_data]
         return elements
+
+    def snapshot(self):
+        content = {'msg_type': 'get_snapshot'}
+        self.png = None
+        self._widget.send(content)
+
+    def show_snapshot(self):
+        if self.png:
+            display(Image(self.png))
+
+    def get_snapshot(self):
+        return self.png
 
     def _ipython_display_(self):
         display(self._widget)
