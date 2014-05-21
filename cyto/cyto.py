@@ -103,15 +103,21 @@ class Graph(object):
         self._widget.on_msg(self._handle_message)
         self._widget.style = to_cystyle(style)
         self.png = None
+        self.state = None
 
     def _on_displayed(self, e):
         elements = self._get_elements()
         self._widget.elements = elements
 
     def _handle_message(self, widget, content):
-        image = content['image']
-        # should look like "data:image/<image type>;base64,<base64 encoded image>"
-        self.png = base64.decodestring(image.split(',')[1])
+        if content['msg_type'] == 'snapshot':
+            image = content['image']
+            # should look like "data:image/<image type>;base64,<base64 encoded image>"
+            self.png = base64.decodestring(image.split(',')[1])
+        elif content['msg_type'] == 'json':
+            self.state = content['json']
+        else:
+            print "unexpected message type", content['msg_type']
 
     def show(self):
         display(self._widget)
@@ -133,6 +139,11 @@ class Graph(object):
 
     def get_snapshot(self):
         return self.png
+
+    def save_state(self):
+        content = {'msg_type': 'save_state'}
+        self.state = None
+        self._widget.send(content)
 
     def _ipython_display_(self):
         display(self._widget)

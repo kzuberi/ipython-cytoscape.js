@@ -76,14 +76,19 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
         },
 
         on_msg: function(msg) {
-            if (msg.msg_type == 'get_snapshot') {
-                var cy = this.$el.cytoscape('get');
-                var image = cy.png()
-                this.send({'image': image});
-            }
-            else {
-                // TODO: have to fallback to superclass on_msg for add_class etc?
-                console.log("unexpected msg_type", msg.msg_type);
+            switch (msg.msg_type) {
+                case 'get_snapshot':
+                    var cy = this.$el.cytoscape('get');
+                    var image = cy.png()
+                    this.send({'msg_type': 'snapshot', 'image': image});
+                    break;
+                case 'save_state':
+                    var cy = this.$el.cytoscape('get');
+                    var json = JSON.stringify(cy.json());
+                    this.send({'msg_type': 'json', 'json': json});
+                    break;
+                default:
+                    console.log("unexpected msg_type", msg.msg_type);
             }
         }
 
