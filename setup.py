@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name = "ipython-cytoscape.js",
     version = "0.1.0-dev",
-    description = "Cytoscape.js graph visualization widget for the IPython Notebook",
+    description = "Cytoscape.js network visualization widget for the IPython Notebook",
     author = "Khalid Zuberi",
     author_email = "kzuberi@gmail.com",
     packages = ["cyto",],

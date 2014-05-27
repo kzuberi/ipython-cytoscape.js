@@ -1,4 +1,4 @@
-Cytoscape.js graph visualization widget for the IPython Notebook
+Cytoscape.js network visualization widget for the IPython Notebook
 
 Notebooks working out the basics of implementation:
 
