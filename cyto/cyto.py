@@ -85,6 +85,7 @@ class CytoWidget(widgets.DOMWidget):
     _view_name = Unicode('CytoWidgetView', sync=True)
     elements = List(Unicode, sync=True)
     style = Unicode('', sync=True)
+    layout = Unicode('circle', sync=True)
 
     def __init__(self):
         '''
@@ -95,13 +96,14 @@ class CytoWidget(widgets.DOMWidget):
 
 
 class Graph(object):
-    def __init__(self, nodes_df, edges_df, style=default_style):
+    def __init__(self, nodes_df, edges_df, style=default_style, layout='circle'):
         self._nodes_df = nodes_df
         self._edges_df = edges_df
         self._widget = CytoWidget()
         self._widget.on_displayed(self._on_displayed)
         self._widget.on_msg(self._handle_message)
         self._widget.style = to_cystyle(style)
+        self._widget.layout = layout
         self.png = None
         self.state = None
 

@@ -52,6 +52,9 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
             var style = this.model.get('style');
             cy.style().resetToDefault().fromJson($.parseJSON(style));
 
+            var layout = this.model.get('layout');
+            cy.layout({name: layout});
+
             var elements = this.model.get('elements');
             var node_data = $.parseJSON(elements[0]);
             var edge_data = $.parseJSON(elements[1]);
