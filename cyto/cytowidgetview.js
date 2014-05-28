@@ -99,4 +99,18 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
 
     // register widget
     WidgetManager.register_widget_view('CytoWidgetView', CytoWidgetView);
+
+    // if there is a widget state saved in the page, use to
+    // inititialize a graph. May be able to support display on
+    // viewer pages without the backend.
+    $.each($("#cyto_state"), function(){
+        console.log("found a cyto_state %o", this);
+        var json_state = $.parseJSON($(this).text());
+
+        // change layout to use saved positions
+        json_state['layout'] = {'name': 'preset'};
+
+        $(this).after("<div id='cyto_graph' style='height: 500px; width: 500px; position: relative'></div>");
+        $("#cyto_graph").cytoscape(json_state);
+    });
 });

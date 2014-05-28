@@ -1,6 +1,6 @@
 
 from IPython.html import widgets, nbextensions
-from IPython.display import display, Javascript
+from IPython.display import display, Javascript, HTML
 from IPython.utils.traitlets import Unicode, List
 from IPython.core.display import Image
 import json
@@ -118,6 +118,7 @@ class Graph(object):
             self.png = base64.decodestring(image.split(',')[1])
         elif content['msg_type'] == 'json':
             self.state = content['json']
+            self._cache_state()
         else:
             print "unexpected message type", content['msg_type']
 
@@ -149,4 +150,8 @@ class Graph(object):
 
     def _ipython_display_(self):
         display(self._widget)
+
+    def _cache_state(self):
+        cache_element = "<div id='cyto_state' style='display: none;'>%s</div>" % self.state
+        display(HTML(cache_element))
 
