@@ -36,7 +36,7 @@ Load extension in a notebook
 
     %load_ext cyto
 
-Specify interactions and create a graph
+Specify interactions to create a graph
 
 .. code-block:: python
 
@@ -44,7 +44,7 @@ Specify interactions and create a graph
     nodes = pd.read_csv('/path/to/nodes.csv')
     edges = pd.read_csv('/path/to/edges.csv')
 
-    graph = cyto.graph(nodes, edges, layout='circle')
+    network = cyto.Network(nodes, edges, layout='circle')
 
 Click and drag nodes as needed, save result to a png
 

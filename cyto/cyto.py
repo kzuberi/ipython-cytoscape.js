@@ -95,7 +95,7 @@ class CytoWidget(widgets.DOMWidget):
         super(CytoWidget, self).__init__()
 
 
-class Graph(object):
+class Network(object):
     def __init__(self, nodes_df, edges_df, style=default_style, layout='circle'):
         self._nodes_df = nodes_df
         self._edges_df = edges_df
@@ -116,6 +116,14 @@ class Graph(object):
             image = content['image']
             # should look like "data:image/<image type>;base64,<base64 encoded image>"
             self.png = base64.decodestring(image.split(',')[1])
+            if content['on_return'] == 'save':
+                filename = content['filename']
+                f = open(filename, 'w')
+                f.write(self.png)
+                f.close()
+            elif content['on_return'] == 'display':
+                self.show_snapshot()
+
         elif content['msg_type'] == 'json':
             self.state = content['json']
             self._cache_state()
@@ -131,17 +139,22 @@ class Graph(object):
         elements = [node_data, edge_data]
         return elements
 
-    def snapshot(self):
+    def snapshot(self, filename = None):
+
         content = {'msg_type': 'get_snapshot'}
+
+        if filename:
+            content['on_return'] = 'save'
+            content['filename'] = filename
+        else:
+            content['on_return'] = 'display'
+
         self.png = None
         self._widget.send(content)
 
     def show_snapshot(self):
         if self.png:
             display(Image(self.png))
-
-    def get_snapshot(self):
-        return self.png
 
     def save_state(self):
         content = {'msg_type': 'save_state'}

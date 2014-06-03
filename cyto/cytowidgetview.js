@@ -99,7 +99,18 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
                 case 'get_snapshot':
                     var cy = this.$el.cytoscape('get');
                     var image = cy.png()
-                    this.send({'msg_type': 'snapshot', 'image': image});
+                    var return_msg = {'msg_type': 'snapshot', 'image': image};
+
+                    // pass on_return back
+                    if (msg.on_return == 'display') {
+                        return_msg['on_return'] = 'display';
+                    }
+                    else if (msg.on_return == 'save') {
+                        return_msg['on_return'] = 'save';
+                        return_msg['filename'] = msg.filename;
+                    }
+
+                    this.send(return_msg);
                     break;
                 case 'save_state':
                     var cy = this.$el.cytoscape('get');
