@@ -42,12 +42,14 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
 
                 layout: {
                     name: 'circle',
+                    fit: true,
                 },
 
-                zoomingEnabled: false,
+                zoomingEnabled: true,
                 userZoomingEnabled: false,
                 pan: { x: 0, y: 0 },
-                panningEnabled: false,
+                panningEnabled: true,
+                userPanningEnabled: false,
 
                 ready: function(evt){
                     // clear cytoscape container position cache
@@ -69,7 +71,7 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
             cy.style().resetToDefault().fromJson($.parseJSON(style));
 
             var layout = this.model.get('layout');
-            cy.layout({name: layout});
+            cy.layout({name: layout, fit: true});
 
             var elements = this.model.get('elements');
             var node_data = $.parseJSON(elements[0]);
