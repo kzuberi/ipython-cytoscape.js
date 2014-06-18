@@ -8,6 +8,7 @@ from pkg_resources import resource_stream
 from contextlib import closing
 import copy
 import base64
+import pandas as pd
 
 
 def init():
@@ -96,9 +97,13 @@ class CytoWidget(widgets.DOMWidget):
 
 
 class Network(object):
-    def __init__(self, nodes_df, edges_df, style=default_style, layout='circle'):
-        self._nodes_df = nodes_df
-        self._edges_df = edges_df
+    def __init__(self, nodes=None, edges=None, style=default_style, layout='circle'):
+
+        if nodes is None and edges is not None:
+            nodes = self._nodes_from_edges(edges)
+
+        self._nodes = nodes
+        self._edges = edges
         self._widget = CytoWidget()
         self._widget.on_displayed(self._on_displayed)
         self._widget.on_msg(self._handle_message)
@@ -134,8 +139,8 @@ class Network(object):
         display(self._widget)
 
     def _get_elements(self):
-        node_data = self._nodes_df.to_json(orient='records')
-        edge_data = self._edges_df.to_json(orient='records')
+        node_data = self._nodes.to_json(orient='records')
+        edge_data = self._edges.to_json(orient='records')
         elements = [node_data, edge_data]
         return elements
 
@@ -168,3 +173,9 @@ class Network(object):
         cache_element = "<div id='cyto_state' style='display: none;'>%s</div>" % self.state
         display(HTML(cache_element))
 
+    def _nodes_from_edges(self, edges):
+        nodes = pd.DataFrame(pd.concat([edges['source'], edges['target']]), columns=['id'])
+        nodes.drop_duplicates(inplace=True)
+        nodes['name'] = nodes['id']
+
+        return nodes
