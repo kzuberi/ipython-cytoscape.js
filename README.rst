@@ -4,6 +4,8 @@ IPython-Cytoscape.js
 An interactive network visualization widget for the IPython Notebook based on the
 `Cytoscape.js <http://cytoscape.github.io/cytoscape.js/>`_ JavaScript library.
 
+Here's a brief `demo notebook <http://nbviewer.ipython.org/github/kzuberi/ipython-cytoscape.js/blob/master/demo.ipynb]`_.
+
 Features
 --------
 
