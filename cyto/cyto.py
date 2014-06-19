@@ -22,7 +22,8 @@ def init():
 # key is a cytoscape.js selector, values are style properties
 default_style = {'node': {
         'shape': 'data(shape)',
-        'width': 'mapData(weight, 40, 80, 20, 60)',
+        'width': 'mapData(weight, 0, 100, 20, 60)',
+        'height': 'mapData(weight, 0, 100, 20, 60)',
         'content': 'data(name)',
         'text-valign': 'center',
         'text-outline-width': 2,
@@ -37,7 +38,7 @@ default_style = {'node': {
     },
 
     'edge': {
-        'width': 'mapData(strength, 70, 100, 2, 6)',
+        'width': 'mapData(strength, 0, 100, 2, 6)',
         'target-arrow-shape': 'triangle',
         'source-arrow-shape': 'circle',
         'line-color': 'data(color)',
