@@ -1,4 +1,6 @@
 
+from __future__ import absolute_import
+
 from IPython.html import widgets, nbextensions
 from IPython.display import display, Javascript, HTML
 from IPython.utils.traitlets import Unicode, List
@@ -13,7 +15,7 @@ import pandas as pd
 
 def init():
     with closing(resource_stream(__name__, 'cytowidgetview.js')) as js:
-        display(Javascript(data=js.read()))
+        display(Javascript(data=(js.read()).decode('utf8')))
 
 
 # configure default styles - these
@@ -121,7 +123,7 @@ class Network(object):
         if content['msg_type'] == 'snapshot':
             image = content['image']
             # should look like "data:image/<image type>;base64,<base64 encoded image>"
-            self.png = base64.decodestring(image.split(',')[1])
+            self.png = base64.decodestring(image.split(',')[1].encode('ascii'))
             if content['on_return'] == 'save':
                 filename = content['filename']
                 f = open(filename, 'w')
@@ -134,7 +136,7 @@ class Network(object):
             self.state = content['json']
             self._cache_state()
         else:
-            print "unexpected message type", content['msg_type']
+            print("unexpected message type", content['msg_type'])
 
     def show(self):
         display(self._widget)
