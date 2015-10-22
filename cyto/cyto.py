@@ -1,9 +1,10 @@
 
 from __future__ import absolute_import
 
-from IPython.html import widgets, nbextensions
+from notebook import nbextensions
+from ipywidgets import DOMWidget
 from IPython.display import display, Javascript, HTML
-from IPython.utils.traitlets import Unicode, List
+from traitlets import Unicode, List
 from IPython.core.display import Image
 import json
 from pkg_resources import resource_stream
@@ -85,7 +86,7 @@ def to_cystyle(style):
     return json.dumps(stylish_list)
 
 
-class CytoWidget(widgets.DOMWidget):
+class CytoWidget(DOMWidget):
     _view_name = Unicode('CytoWidgetView', sync=True)
     elements = List(Unicode, sync=True)
     style = Unicode('', sync=True)

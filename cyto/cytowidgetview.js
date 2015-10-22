@@ -22,9 +22,13 @@ require(["cytoscape"], function(cytoscape) {
 
 });
 
-require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
+//require(["widgets/js/widget", "cytoscape"], function(widget, cytoscape){
+require(["nbextensions/widgets/widgets/js/widget",
+         "nbextensions/widgets/widgets/js/manager",
+         "cytoscape"],
+         function(widget, manager, cytoscape){
 
-    var CytoWidgetView = IPython.DOMWidgetView.extend({
+    var CytoWidgetView = widget.DOMWidgetView.extend({
 //        if we need the initialize function, remember to put in a call
 //        to the super method. here's a reminder:
 //        initialize: function() {
@@ -32,68 +36,78 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
 //        },
 
         render: function(){
-            this.$el.css('height', '500px');
-            this.$el.css('width', '500px');
-            this.$el.css('position', 'relative');
-
-            var that = this;
-
-            this.$el.cytoscape({
-
-                layout: {
-                    name: 'circle',
-                    fit: true,
-                },
-
-                zoomingEnabled: true,
-                userZoomingEnabled: false,
-                pan: { x: 0, y: 0 },
-                panningEnabled: true,
-                userPanningEnabled: false,
-
-                ready: function(evt){
-                    // clear cytoscape container position cache
-                    // to work around scrolling bug
-                    var cy = this;
-                    that.$el.closest("#notebook").scroll(function(){
-                        cy._private.renderer.containerBB = null;
-                    });
-                },
-            })
-
+            // for some reason setting up cytoscape in this render
+            // function doesn't work anymore, moved the work to update()
+            this.model.on('change:elements', this.value_changed, this);
             return this;
         },
 
+        value_changed: function() {
+          console.log("in value_changed()");
+        },
+
         update: function() {
-            var cy = this.$el.cytoscape('get');
 
-            var style = this.model.get('style');
-            cy.style().resetToDefault().fromJson($.parseJSON(style));
+          this.$el.css('height', '500px');
+          this.$el.css('width', '500px');
+          this.$el.css('position', 'relative');
 
-            var layout = this.model.get('layout');
-            cy.layout({name: layout, fit: true});
+          // since cy.load() is deprecated, and cy.add()
+          // requires a different format, setup the elements
+          // when creating the cytocape instance, and
+          // figure out how to deal with updates later
+          var elements = this.model.get('elements');
+          var node_data = $.parseJSON(elements[0]);
+          var edge_data = $.parseJSON(elements[1]);
 
-            var elements = this.model.get('elements');
-            var node_data = $.parseJSON(elements[0]);
-            var edge_data = $.parseJSON(elements[1]);
+          var nodes = [];
+          for (var i=0; i<node_data.length; i++) {
+              nodes.push({data: node_data[i]});
+          }
 
-            var nodes = [];
-            for (var i=0; i<node_data.length; i++) {
-                nodes.push({data: node_data[i]});
-            }
+          var edges = [];
+          for (var i=0; i<edge_data.length; i++) {
+              edges.push({data: edge_data[i]});
+          }
 
-            var edges = [];
-            for (var i=0; i<edge_data.length; i++) {
-                edges.push({data: edge_data[i]});
-            }
+          var elems = {nodes: nodes, edges: edges};
+          // console.log("elements", JSON.stringify(elems));
 
-            var elements = {nodes: nodes, edges: edges};
+          var that = this;
 
-            cy.load(elements, function() {
-                //console.log("cy load done");
-            });
+          this.$el.cytoscape({
+            elements: elems,
 
-            return CytoWidgetView.__super__.update.apply(this);
+              layout: {
+                  name: 'circle',
+                  fit: true,
+              },
+
+              zoomingEnabled: true,
+              userZoomingEnabled: false,
+              pan: { x: 0, y: 0 },
+              panningEnabled: true,
+              userPanningEnabled: false,
+
+              ready: function(evt){
+                  // clear cytoscape container position cache
+                  // to work around scrolling bug
+                  var cy = this;
+                  that.$el.closest("#notebook").scroll(function(){
+                      cy._private.renderer.containerBB = null;
+                  });
+              },
+          })
+
+          var cy = this.$el.cytoscape('get');
+
+          var layout = this.model.get('layout');
+          cy.layout({name: layout, fit: true});
+
+          var style = this.model.get('style');
+          cy.style().resetToDefault().fromJson($.parseJSON(style)).update();
+
+          return CytoWidgetView.__super__.update.apply(this);
         },
 
         on_msg: function(msg) {
@@ -127,5 +141,5 @@ require(["widgets/js/widget", "cytoscape"], function(WidgetManager, cytoscape){
     });
 
     // register widget
-    WidgetManager.register_widget_view('CytoWidgetView', CytoWidgetView);
+    manager.WidgetManager.register_widget_view('CytoWidgetView', CytoWidgetView);
 });
