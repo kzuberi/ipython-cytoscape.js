@@ -11,5 +11,5 @@ setup(
     packages = ["cyto",],
     package_data = {'': ['*.css', '*.js',]},
     zip_safe = True,
-    install_requires = ['IPython>=2.0', 'pandas>=0.12',],
+    install_requires = ['IPython>=4.0', 'pandas>=0.12',],
 )
